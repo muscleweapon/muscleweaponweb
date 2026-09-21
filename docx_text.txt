@@ -1,0 +1,343 @@
+
+
+
+MUSCLE WEAPON®
+
+UI / UX DESIGN SPECIFICATION
+
+Light • Futuristic • Athlete-first • Premium • 2050-inspired
+
+
+Implementation reference for Antigravity. This document defines the visual system, page layouts, components, states, interactions and responsive behavior for the Muscle Weapon website.
+
+
+1. Design Direction
+The experience should feel like a premium sports-tech platform rather than a conventional supplement store. The visual direction is intentionally LIGHT: white and cool-gray surfaces, deep navy typography, electric blue accents, crisp product photography, subtle glass effects, generous whitespace and controlled 3D depth.
+Principle
+Design rule
+Athlete-first
+Every major section should communicate performance, discipline, recovery or authenticity.
+Light futuristic
+Use white/light-gray backgrounds with blue energy accents; avoid an all-black interface.
+Premium clarity
+Large typography, clean hierarchy, strong product imagery and restrained decoration.
+3D depth
+Use soft shadows, floating cards, subtle perspective and product hero renders without visual clutter.
+Fast comprehension
+Primary CTA and product information must be obvious within 1–2 seconds.
+Real data only
+Production UI must render database data; never populate visible production screens with fake metrics/products.
+
+
+2. Design Tokens
+Token
+Value
+Usage
+Primary
+#0B1220
+Main text, navigation, headings
+Electric Blue
+#1677FF
+Primary CTA, links, active states
+Blue Deep
+#0757C8
+Hover/pressed states
+Sky
+#EAF4FF
+Soft accent backgrounds
+Surface
+#FFFFFF
+Cards, panels, forms
+Canvas
+#F5F8FC
+Main page background
+Border
+#DDE5EF
+Dividers, card borders
+Muted Text
+#667085
+Secondary copy
+Success
+#12A150
+Verified, active, in-stock
+Warning
+#F59E0B
+Pending, caution
+Danger
+#DC3545
+Delete, disabled, error
+Radius
+14–22px
+Cards, panels, inputs
+Shadow
+0 12px 35px rgba(11,18,32,.10)
+Elevated surfaces
+Container
+1200–1320px
+Desktop max width
+Grid
+12 columns
+Desktop page structure
+
+
+3. Typography
+Recommended family: Inter for UI/body. Use a condensed/italic display face only for major campaign headlines. Keep the display font limited to hero statements so the interface remains readable.
+Level
+Size
+Weight
+Use
+Display
+52–72px
+800
+Hero campaign headline
+H1
+40–52px
+800
+Page hero/title
+H2
+28–36px
+750
+Section headings
+H3
+20–24px
+700
+Card/product headings
+Body
+15–17px
+400–500
+Descriptions
+Caption
+12–13px
+500
+Metadata, helper text
+Button
+14–15px
+700
+CTA labels
+
+
+4. Global Navigation &amp; Footer
+Header: white translucent surface, 1px bottom border, compact Muscle Weapon logo at left, navigation in the center, search/cart/account actions at right. On scroll, header becomes sticky with a subtle blur and shadow.
+Primary navigation: Home • Products • About • Verify Product • Blogs • Contact. Admin navigation is separate and never exposed as a public link.
+Footer: logo, short brand statement, product category links, customer support, Amazon/Flipkart links, social links, legal links and copyright. Keep the footer white with navy text and blue hover accents.
+
+
+5. Reusable Components
+Component
+Required behavior
+MWButton
+Primary blue, secondary outline, ghost and danger variants; hover lift; disabled/loading states.
+ProductCard
+Image, name, category, rating if real, price, availability, Add to Cart/Buy CTA.
+ProductGallery
+Large image, thumbnails, zoom/lightbox, mobile swipe.
+FilterPanel
+Category, price, flavor, availability; collapsible on mobile.
+VerificationInput
+Scratch-code field, mobile-number field, validation, rate-limit feedback.
+StatusBadge
+Active, In Stock, Verified, Pending, Disabled, Error.
+AdminDataTable
+Search, filters, pagination, column actions, bulk selection where appropriate.
+MetricCard
+Label, real value, optional period comparison only when source data exists.
+Toast
+Success/error/info feedback with auto-dismiss and accessible live region.
+Modal
+Confirmation and focused workflows; destructive actions require explicit confirmation.
+
+
+6. User Pages
+
+
+6.1 Home Page
+Hero: full-width light visual with premium supplement/product render on one side and a bold performance headline on the other.Primary CTA: Shop Products. Secondary CTA: Verify Product.Immediately below: trust strip with Authentic Products, Premium Quality, Athlete Focus, Fast Support.Then: Shop by Category using seven category tiles: Protein, Mass Gainer, Multivitamins, Calcium, Omega Gold Fish Oil, Creatine, Pre-Workout.Then: Featured Products populated only from products marked visible by Admin.Then: brand-performance campaign banner with athlete imagery.Then: benefits/trust section, followed by support CTA and footer.
+
+
+6.2 Products Page
+Two-column desktop layout: left filter rail, right product grid. Top row contains title, product count from database and sort control.Product cards use white surfaces, subtle border/shadow, strong product photography and blue CTA.Filters: category, price, flavor, availability and any product attributes actually stored.Mobile: filter opens as a bottom sheet/drawer. No fake products or invented ratings.
+
+
+6.3 Product Detail
+Breadcrumbs at top. Main area uses a 2-column gallery + purchase panel.Purchase panel: product name, real rating/review count if available, price, stock state, variant/flavor selectors, quantity, Add to Cart and Buy Now.Below: tabs/sections for Description, Nutrition Facts, Ingredients, How to Use, Reviews.Show authenticity/trust icons only when supported by actual product/business information.
+
+
+6.4 About
+Editorial brand story page. Large athlete image/visual, mission statement, brand principles, quality approach and a clear route to Products.Avoid invented statistics such as customer counts or ratings unless those values exist in the database.
+
+
+6.5 Verify Product
+Focused authenticity experience.Step 1: enter mandatory valid mobile number.Step 2: enter scratch code.Step 3: submit verification.Success state shows verified/not-previously-verified status and safe product information available for that code.Failure states clearly explain invalid, disabled, already verified or rate-limited scenarios.Do not expose sensitive verification logs to users.
+
+
+6.6 Contact
+Two-column layout: support information on the left and contact form on the right.Support email: muscle.weapon@gmail.com.Phone: 8816090309.Form: name, email, mobile where appropriate, subject, message and consent/anti-spam control.Show success confirmation only after the submission is accepted by the backend.
+
+
+7. Admin Experience
+The Admin interface should feel substantially more powerful than the public site: dense but clean information architecture, persistent sidebar, command/search capability, real-time status indicators, filters, bulk actions and contextual drawers.
+
+
+7.1 Admin Login
+Secure authentication, clear error states, password visibility control, session handling and optional MFA if configured.
+
+
+7.2 Dashboard
+Real-time metrics from Supabase only. Product count, visible products, verification activity and other actual business metrics. Charts must not render fabricated values.
+
+
+7.3 Products
+Search/filter/table view with image, name, category, price, stock/visibility status, updated date and actions.
+
+
+7.4 Add/Edit Product
+Structured form for product identity, category, pricing, variants, specifications, nutrition facts, ingredients, usage, SEO fields, visibility and images. Images upload to Cloudinary; metadata and URLs stored in Supabase.
+
+
+7.5 Categories
+Create/edit/disable category records; product counts are derived from database relations.
+
+
+7.6 Verification Codes
+Input quantity 1–5000, generate unique codes, status management, product-independent assignment, export XLS/PDF, search/filter, disable/delete where business rules allow.
+
+
+7.7 Verification Logs
+Audit table showing code, verification timestamp, masked/appropriate mobile information, approximate location information when legally/technically available, device/browser metadata and product context. Apply data minimization and retention controls.
+
+
+7.8 Customers
+Only real customer records from the database. Search and filter with privacy-aware fields.
+
+
+7.9 Reviews
+Moderation interface for real reviews if reviews are implemented. Include status and moderation actions.
+
+
+7.10 Content/Banners
+Manage homepage campaigns, banners and visibility without requiring code changes.
+
+
+7.11 Settings
+Admin profile, roles/permissions, security, integrations and operational settings.
+
+
+8. Verification UX &amp; Security
+Stage
+UI behavior
+Enter mobile
+Validate Indian mobile format on client and server; never rely on client validation alone.
+Enter code
+Normalize input, show format helper, prevent excessive attempts.
+Verify
+Loading state; disable duplicate submission; server-side verification is authoritative.
+Success
+Show verified status and permitted product information.
+Invalid
+Generic but useful error; do not reveal unnecessary internal details.
+Already verified
+Explain that the code has previously been verified without exposing private audit data.
+Disabled
+Explain that the code cannot currently be verified and provide support route.
+Abuse protection
+Rate limiting, logging, anomaly detection and server-side authorization.
+
+
+9. Motion &amp; 3D Language
+Use motion to communicate hierarchy, not decoration. Hero products can float 6–12px on a slow loop; cards may lift 2–4px on hover; page sections use short 250–450ms reveal transitions. Avoid excessive parallax, particle effects or continuous animation that reduces readability or performance. Respect prefers-reduced-motion.
+3D direction: realistic product renders, soft studio shadows, controlled reflections and subtle depth. Keep the background light. Use blue glows sparingly around primary actions or hero objects.
+
+
+10. Responsive Rules
+Breakpoint
+Layout behavior
+≥ 1280px
+12-column desktop, full navigation, 3–4 product cards per row.
+1024–1279px
+Reduced gutters, 3-card grid, compact admin tables.
+768–1023px
+2-card grid, collapsible navigation/filter panels.
+&lt; 768px
+Single-column flow, mobile header, bottom-sheet filters, sticky purchase CTA on product detail.
+Touch
+Minimum comfortable tap targets around 44px; avoid hover-only actions.
+
+
+11. Accessibility
+Use semantic headings, keyboard navigation, visible focus states, accessible labels, sufficient color contrast, alt text for meaningful product images, error messages associated with fields, ARIA only where necessary, and reduced-motion support. Never communicate status by color alone.
+
+
+12. Data &amp; Implementation Rules
+
+
+Supabase is the source of truth for application data.
+
+
+Cloudinary stores product media; store stable Cloudinary URLs/IDs in Supabase.
+
+
+Public product pages show only records explicitly marked visible/published by Admin.
+
+
+Admin dashboards display only live queried values; no demo metrics in production.
+
+
+All privileged operations require server-side authorization and role checks.
+
+
+Verification codes must be cryptographically generated and unique; uniqueness must also be enforced at the database level.
+
+
+Exports must be generated from the selected real dataset and reflect the applied filters when applicable.
+
+
+Delete/disable actions must have explicit confirmation and auditability.
+
+
+Use pagination for large datasets; do not load thousands of rows into the browser unnecessarily.
+
+
+Keep secrets and service credentials server-side; never expose Supabase service-role or Cloudinary secrets in client code.
+
+
+13. Page-to-Component Map
+Page
+Core components
+Home
+Header, Hero, TrustStrip, CategoryTiles, ProductGrid, CampaignBanner, Benefits, Footer
+Products
+Header, Breadcrumb, FilterPanel, SortBar, ProductGrid, Pagination, Footer
+Product Detail
+Breadcrumb, ProductGallery, PurchasePanel, VariantSelector, InfoTabs, Reviews, RelatedProducts
+About
+EditorialHero, StorySection, Principles, CTA, Footer
+Verify
+VerificationForm, StepIndicator, ResultCard, SecurityNotice, SupportCTA
+Contact
+ContactInfo, ContactForm, Validation, SuccessState, Footer
+Admin Dashboard
+Sidebar, Topbar, MetricCards, Charts, ActivityTable
+Admin Products
+SearchBar, Filters, DataTable, StatusBadge, ActionMenu, Pagination
+Admin Product Form
+ImageUploader, TextFields, RichText, NutritionTable, VisibilityControl, SaveBar
+Admin Codes
+GeneratorPanel, CodeTable, Filters, ExportActions, StatusControls, AuditDrawer
+
+
+14. Final Visual QA Checklist
+☐ Light background remains dominant; interface must not drift into an all-dark theme.
+☐ Muscle Weapon logo remains visually consistent and is never stretched.
+☐ Blue is used as an accent/interaction color, not as a full-page background.
+☐ Product imagery is sharp, clean and consistently framed.
+☐ Primary CTA is visually obvious on every conversion-oriented page.
+☐ Desktop layouts have deliberate whitespace and do not look like generic templates.
+☐ Admin screens prioritize information density while preserving hierarchy.
+☐ All production numbers, products, ratings and verification records originate from real data.
+☐ Loading, empty, error and success states are designed before implementation.
+☐ Mobile layouts are intentionally designed rather than simply shrinking desktop screens.
+
+
+15. Handoff Note for Antigravity
+Treat this document as the visual/interaction contract. Build reusable components from the design tokens first, then implement the public shell, product system, verification flow and admin shell. Do not invent additional visual systems page-by-page. When a requirement is not specified, preserve the same light premium visual language and choose the simplest accessible interaction.
+

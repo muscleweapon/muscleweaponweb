@@ -1,26 +1,246 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ==========================================================================
+     MUSCLE WEAPON DESIGN SYSTEM TOKENS (LIGHT FUTURISTIC 2050)
+     Source: Muscle_Weapon_UI_UX_Design_Specification.docx
+     ========================================================================== */
+
+  /* Primary Palette */
+  --mw-primary: #0B1220;
+  --mw-electric-blue: #1677FF;
+  --mw-blue-deep: #0757C8;
+  --mw-sky: #EAF4FF;
+
+  /* Surfaces & Backgrounds (Light dominant) */
+  --mw-surface: #FFFFFF;
+  --mw-canvas: #F5F8FC;
+  --mw-border: #DDE5EF;
+  --mw-border-subtle: #EDF2F7;
+
+  /* Typography Colors */
+  --mw-text-main: #0B1220;
+  --mw-text-muted: #667085;
+  --mw-text-inverse: #FFFFFF;
+
+  /* Status Colors (Must always be paired with text/icon, never color alone) */
+  --mw-success: #12A150;
+  --mw-success-bg: #E8F8EE;
+  --mw-warning: #F59E0B;
+  --mw-warning-bg: #FEF3C7;
+  --mw-danger: #DC3545;
+  --mw-danger-bg: #FEE2E2;
+
+  /* Geometry & Radius (14–22px per Section 2) */
+  --mw-radius-sm: 8px;
+  --mw-radius-md: 14px;
+  --mw-radius-lg: 18px;
+  --mw-radius-xl: 22px;
+  --mw-radius-full: 9999px;
+
+  /* Shadows (Controlled 3D Depth - 0 12px 35px rgba(11,18,32,.10)) */
+  --mw-shadow-sm: 0 2px 8px rgba(11, 18, 32, 0.04);
+  --mw-shadow-card: 0 12px 35px rgba(11, 18, 32, 0.10);
+  --mw-shadow-elevated: 0 20px 45px rgba(11, 18, 32, 0.14);
+  --mw-shadow-glow: 0 0 25px rgba(22, 119, 255, 0.20);
+
+  /* Layout Containers (1200–1320px per Section 2) */
+  --mw-container-max: 1320px;
+
+  /* Standard base bindings */
+  --background: var(--mw-canvas);
+  --foreground: var(--mw-text-main);
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  --color-mw-primary: var(--mw-primary);
+  --color-mw-blue: var(--mw-electric-blue);
+  --color-mw-blue-deep: var(--mw-blue-deep);
+  --color-mw-sky: var(--mw-sky);
+  --color-mw-surface: var(--mw-surface);
+  --color-mw-canvas: var(--mw-canvas);
+  --color-mw-border: var(--mw-border);
+  --color-mw-border-subtle: var(--mw-border-subtle);
+  --color-mw-muted: var(--mw-text-muted);
+  --color-mw-success: var(--mw-success);
+  --color-mw-success-bg: var(--mw-success-bg);
+  --color-mw-warning: var(--mw-warning);
+  --color-mw-warning-bg: var(--mw-warning-bg);
+  --color-mw-danger: var(--mw-danger);
+  --color-mw-danger-bg: var(--mw-danger-bg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--mw-canvas);
+  color: var(--mw-text-main);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
+
+/* ==========================================================================
+   FOCUS ACCESSIBILITY (WCAG 2.2 AA)
+   ========================================================================== */
+:focus-visible {
+  outline: 2px solid var(--mw-electric-blue);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY SPECIFICATION (Section 3)
+   ========================================================================== */
+.mw-display {
+  font-size: clamp(2.5rem, 5vw, 4.5rem); /* 52–72px */
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--mw-primary);
+}
+
+.mw-h1 {
+  font-size: clamp(2rem, 3.5vw, 3.25rem); /* 40–52px */
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--mw-primary);
+}
+
+.mw-h2 {
+  font-size: clamp(1.6rem, 2.5vw, 2.25rem); /* 28–36px */
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--mw-primary);
+}
+
+.mw-h3 {
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem); /* 20–24px */
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  color: var(--mw-primary);
+}
+
+.mw-body {
+  font-size: clamp(0.9375rem, 1.2vw, 1.0625rem); /* 15–17px */
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--mw-text-muted);
+}
+
+.mw-body-medium {
+  font-size: clamp(0.9375rem, 1.2vw, 1.0625rem); /* 15–17px */
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--mw-text-main);
+}
+
+.mw-caption {
+  font-size: 0.8125rem; /* 12–13px */
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--mw-text-muted);
+}
+
+.mw-button-text {
+  font-size: 0.9375rem; /* 14–15px */
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* ==========================================================================
+   ANIMATION & 3D MOTION RULES (Section 9)
+   Hero products float 6–12px on slow loop; cards lift 2–4px on hover
+   Reveal transitions 250–450ms
+   ========================================================================== */
+@keyframes mw-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.mw-float-animation {
+  animation: mw-float 6s ease-in-out infinite;
+}
+
+.mw-card {
+  background-color: var(--mw-surface);
+  border: 1px solid var(--mw-border);
+  border-radius: var(--mw-radius-lg);
+  box-shadow: var(--mw-shadow-card);
+  transition: transform 250ms ease, box-shadow 250ms ease;
+}
+
+.mw-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(11, 18, 32, 0.12);
+}
+
+.mw-card-elevated {
+  background-color: var(--mw-surface);
+  border: 1px solid var(--mw-border);
+  border-radius: var(--mw-radius-xl);
+  box-shadow: var(--mw-shadow-elevated);
+}
+
+/* ==========================================================================
+   REDUCED MOTION (Strict respect for prefers-reduced-motion)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .mw-float-animation {
+    animation: none !important;
+  }
+  .mw-card:hover {
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   LAYOUT CONTAINERS & GRIDS (Section 10)
+   ≥ 1280px: 12-column desktop
+   1024–1279px: reduced gutters
+   768–1023px: 2-column grid
+   < 768px: single-column flow
+   ========================================================================== */
+.mw-container {
+  width: 100%;
+  max-width: var(--mw-container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem; /* 20px mobile gutter */
+  padding-right: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .mw-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mw-container {
+    padding-left: 2rem; /* 32px desktop gutter */
+    padding-right: 2rem;
+  }
+}
+
+/* Minimum 44px tap target utility for mobile touch ergonomics */
+.mw-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
