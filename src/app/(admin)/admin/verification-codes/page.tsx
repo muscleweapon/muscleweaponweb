@@ -185,6 +185,8 @@ export default async function AdminVerificationCodesPage({
                       <td className="py-3.5 px-4">
                         {c.status === 'active' ? (
                           <StatusBadge status="active" label="Unused / Active" size="sm" />
+                        ) : c.status === 'verified' ? (
+                          <StatusBadge status="verified" label="Verified / Used" size="sm" />
                         ) : c.status === 'disabled' ? (
                           <StatusBadge status="disabled" label="Disabled" size="sm" />
                         ) : (

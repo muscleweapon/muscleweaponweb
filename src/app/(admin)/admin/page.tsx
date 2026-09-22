@@ -37,6 +37,11 @@ export default async function AdminDashboardPage() {
     .from('verification_codes')
     .select('*', { count: 'exact', head: true });
 
+  const { count: verifiedCodes } = await supabase
+    .from('verification_codes')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'verified');
+
   // 3. Live Verification Events
   const { data: rawEvents } = await supabase
     .from('verification_events')
@@ -67,7 +72,7 @@ export default async function AdminDashboardPage() {
       label: 'Total Code Batches',
       value: totalBatches || 0,
       icon: KeyRound,
-      helper: `${totalCodes || 0} unique codes generated`,
+      helper: `${verifiedCodes || 0} / ${totalCodes || 0} consumed`,
     },
     {
       label: 'Verification Attempts',

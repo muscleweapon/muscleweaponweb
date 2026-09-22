@@ -264,17 +264,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Case 3: Check if Code was Already Verified (Repeat Attempt)
-    const { data: verifiedEvent } = await supabase
-      .from('verification_events')
-      .select('created_at')
-      .eq('code_id', codeRecord.id)
-      .eq('outcome', 'verified')
-      .order('created_at', { ascending: true })
-      .limit(1)
-      .maybeSingle();
-
-    if (verifiedEvent) {
+    // Case 3: Code was already verified (checked via status on the record itself)
+    if (codeRecord.status === 'verified') {
       await recordVerificationEvent(supabase, {
         ...baseEventData,
         code_id: codeRecord.id,
@@ -285,12 +276,61 @@ export async function POST(req: NextRequest) {
         outcome: 'already_verified',
         message:
           'This scratch code was previously authenticated. If you did not scratch and verify this code yourself, it may be a counterfeit.',
-        firstVerifiedAt: verifiedEvent.created_at,
+        firstVerifiedAt: codeRecord.status_changed_at || codeRecord.generated_at,
       });
     }
 
-    // Case 4: Code is Active & Unconsumed -> Record successful verification event
+    // Case 4: Code is Active. Perform Atomic UPDATE to consume the code.
     const nowIso = new Date().toISOString();
+    const { data: updatedCode, error: updateError } = await supabase
+      .from('verification_codes')
+      .update({ status: 'verified', status_changed_at: nowIso })
+      .eq('id', codeRecord.id)
+      .eq('status', 'active')
+      .select()
+      .maybeSingle();
+
+    if (updateError) {
+      console.error('[Verify API] Update error:', updateError);
+      throw updateError;
+    }
+
+    // If zero rows were updated, a concurrent request may have already verified it.
+    if (!updatedCode) {
+      // Re-fetch to confirm it was consumed
+      const { data: refreshedCode } = await supabase
+        .from('verification_codes')
+        .select('status, status_changed_at')
+        .eq('id', codeRecord.id)
+        .maybeSingle();
+
+      if (refreshedCode?.status === 'verified') {
+        await recordVerificationEvent(supabase, {
+          ...baseEventData,
+          code_id: codeRecord.id,
+          outcome: 'already_verified',
+        }, locationInfo);
+
+        return NextResponse.json({
+          outcome: 'already_verified',
+          message:
+            'This scratch code was previously authenticated. If you did not scratch and verify this code yourself, it may be a counterfeit.',
+          firstVerifiedAt: refreshedCode.status_changed_at,
+        });
+      }
+
+      // If it changed to disabled/revoked concurrently
+      if (refreshedCode?.status === 'disabled' || refreshedCode?.status === 'revoked') {
+        return NextResponse.json({
+          outcome: 'disabled',
+          error: 'This security code has been deactivated by administrators.',
+        }, { status: 403 });
+      }
+
+      throw new Error('Atomic update failed for unknown reason');
+    }
+
+    // Success! Code was uniquely consumed by this request.
     await recordVerificationEvent(supabase, {
       ...baseEventData,
       code_id: codeRecord.id,

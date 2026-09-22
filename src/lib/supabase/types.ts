@@ -17,7 +17,7 @@ export type ProductCategory =
 
 export type UserRole = 'admin' | 'super_admin';
 
-export type CodeStatus = 'active' | 'disabled' | 'revoked';
+export type CodeStatus = 'active' | 'verified' | 'disabled' | 'revoked';
 
 export type VerificationOutcome =
   | 'verified'
