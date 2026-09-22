@@ -20,6 +20,8 @@ import {
   Ban,
   RotateCcw,
   ExternalLink,
+  MapPin,
+  Loader2,
 } from 'lucide-react';
 import { verificationAttemptSchema } from '@/lib/validations/verification';
 
@@ -46,21 +48,21 @@ export default function VerifyPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<VerificationResultData | null>(null);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [locationChoice, setLocationChoice] = useState<'pending' | 'allowed' | 'denied'>('pending');
 
   const handleReset = () => {
     setResult(null);
     setCode('');
     setFormError(null);
+    setLocationChoice('pending');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
 
-    const validation = verificationAttemptSchema.safeParse({
-      mobile,
-      code,
-    });
+    const validation = verificationAttemptSchema.safeParse({ mobile, code });
 
     if (!validation.success) {
       const firstIssue = validation.error.issues[0];
@@ -68,22 +70,70 @@ export default function VerifyPage() {
       return;
     }
 
+    if (locationChoice === 'pending') {
+      setShowLocationModal(true);
+      return;
+    }
+
+    await performVerification(validation.data, undefined);
+  };
+
+  const handleLocationChoice = async (choice: 'allow' | 'deny') => {
+    const validation = verificationAttemptSchema.safeParse({ mobile, code });
+    if (!validation.success) return;
+
+    setIsSubmitting(true);
+
+    if (choice === 'allow' && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          setLocationChoice('allowed');
+          setShowLocationModal(false);
+          await performVerification(validation.data, {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            status: 'available',
+            source: 'browser',
+          });
+        },
+        async () => {
+          setLocationChoice('denied');
+          setShowLocationModal(false);
+          await performVerification(validation.data, {
+            status: 'denied',
+            source: 'unavailable',
+          });
+        },
+        { timeout: 8000 }
+      );
+    } else {
+      setLocationChoice('denied');
+      setShowLocationModal(false);
+      await performVerification(validation.data, {
+        status: 'unavailable',
+        source: 'unavailable',
+      });
+    }
+  };
+
+  const performVerification = async (data: any, locationData?: any) => {
     setIsSubmitting(true);
 
     try {
-      // In Phase 1 & 2: Call the server API endpoint or simulate authoritative server response
       const res = await fetch('/api/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          mobile: validation.data.mobile,
-          code: validation.data.code,
+          mobile: data.mobile,
+          code: data.code,
+          location: locationData,
         }),
       });
 
       if (res.ok) {
-        const data = await res.json();
-        setResult(data);
+        const resultData = await res.json();
+        setResult(resultData);
       } else {
         const errData = await res.json().catch(() => ({}));
         setResult({
@@ -94,7 +144,6 @@ export default function VerifyPage() {
         });
       }
     } catch {
-      // Fallback: graceful handling if API route not yet mounted
       setResult({
         outcome: 'invalid',
         message:
@@ -419,6 +468,45 @@ export default function VerifyPage() {
           </div>
         </div>
       </div>
+
+      {/* Location Modal */}
+      {showLocationModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1220]/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-[24px] shadow-2xl max-w-sm w-full overflow-hidden border border-[#DDE5EF]">
+            <div className="p-8 text-center flex flex-col items-center">
+              <div className="w-16 h-16 bg-[#EAF4FF] rounded-full flex items-center justify-center mb-5 text-[#1677FF]">
+                <MapPin className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-black text-[#0B1220] uppercase tracking-tight mb-2">
+                Security Check
+              </h3>
+              <p className="text-sm text-[#667085] leading-relaxed mb-8">
+                Allow location to help us improve product verification security.
+              </p>
+              
+              <div className="flex flex-col gap-3 w-full">
+                <MWButton
+                  size="lg"
+                  className="w-full bg-[#1677FF] text-white hover:bg-[#1677FF]/90"
+                  leftIcon={isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
+                  isLoading={isSubmitting}
+                  onClick={() => handleLocationChoice('allow')}
+                >
+                  ALLOW LOCATION
+                </MWButton>
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={() => handleLocationChoice('deny')}
+                  className="w-full py-3 text-xs font-bold text-[#667085] hover:text-[#0B1220] transition-colors uppercase tracking-wider"
+                >
+                  CONTINUE WITHOUT LOCATION
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

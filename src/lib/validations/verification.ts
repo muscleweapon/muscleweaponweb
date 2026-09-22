@@ -44,7 +44,9 @@ export const verificationAttemptSchema = z.object({
     .object({
       latitude: z.number().optional().nullable(),
       longitude: z.number().optional().nullable(),
+      accuracy: z.number().optional().nullable(),
       status: z.enum(['available', 'denied', 'unavailable']).default('unavailable'),
+      source: z.enum(['browser', 'network', 'unavailable']).default('unavailable'),
     })
     .optional(),
 });

@@ -63,9 +63,9 @@ export async function GET(req: NextRequest) {
     }
 
     if (exportType === 'verifications') {
-      const { data: events, error } = await supabase
+      const { data: rawEvents, error } = await supabase
         .from('verification_events')
-        .select('id, submitted_code_fingerprint, outcome, mobile_masked, location_status, device_ua, created_at')
+        .select('id, submitted_code_fingerprint, outcome, mobile_masked, location_status, location_city, location_region, location_country, location_source, location_accuracy, device_ua, created_at')
         .order('created_at', { ascending: false })
         .limit(5000);
 
@@ -73,13 +73,19 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
 
-      const headers = ['Event ID', 'Code Fingerprint', 'Outcome', 'Masked Mobile', 'Location Status', 'Device/Browser', 'Timestamp'];
-      const rows = (events || []).map((e) => [
+      const events = (rawEvents as any[]) || [];
+      const headers = ['Event ID', 'Code Fingerprint', 'Outcome', 'Masked Mobile', 'Location Status', 'City', 'Region', 'Country', 'Location Source', 'Location JSON', 'Device/Browser', 'Timestamp'];
+      const rows = events.map((e) => [
         e.id,
         e.submitted_code_fingerprint,
         e.outcome,
         e.mobile_masked,
         e.location_status,
+        e.location_city || '',
+        e.location_region || '',
+        e.location_country || '',
+        e.location_source || '',
+        e.location_accuracy || '',
         e.device_ua || '',
         e.created_at,
       ]);

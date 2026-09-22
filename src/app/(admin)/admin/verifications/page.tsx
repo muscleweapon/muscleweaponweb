@@ -33,7 +33,7 @@ export default async function AdminVerificationsPage({
   }
 
   const { data: rawEvents } = await query;
-  const events = rawEvents || [];
+  const events = (rawEvents as any[]) || [];
 
   return (
     <div className="flex flex-col gap-6 max-w-6xl">
@@ -155,10 +155,26 @@ export default async function AdminVerificationsPage({
                       )}
                     </td>
                     <td className="py-3.5 px-4 text-[#667085]">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-[#667085]" />
-                        <span className="capitalize">{e.location_status}</span>
-                      </span>
+                      {(() => {
+                        let locStr = 'Unavailable';
+                        if (e.location_city || e.location_region || e.location_country) {
+                          locStr = [e.location_city, e.location_region, e.location_country]
+                            .filter(Boolean)
+                            .join(', ');
+                        } else if (e.location_accuracy) {
+                          try {
+                            const parsed = JSON.parse(e.location_accuracy as string);
+                            if (parsed.formatted) locStr = parsed.formatted;
+                          } catch {}
+                        }
+                        
+                        return (
+                          <span className="flex items-center gap-1.5" title={`Source: ${e.location_source || e.location_status || 'unknown'}`}>
+                            <MapPin className={`w-3.5 h-3.5 ${locStr === 'Unavailable' ? 'text-[#DDE5EF]' : 'text-[#1677FF]'}`} />
+                            <span className="truncate max-w-[150px]">{locStr}</span>
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="py-3.5 px-4 text-right text-[#667085] font-mono">
                       {new Date(e.created_at).toLocaleString('en-IN', {
